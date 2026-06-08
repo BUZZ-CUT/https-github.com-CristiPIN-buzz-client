@@ -9,8 +9,10 @@ function BookingDonePage() {
     <div style={{ background: '#0A0A0F', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px 40px', fontFamily: 'sans-serif' }}>
 
       {/* Icon succes */}
-      <div style={{ width: '88px', height: '88px', borderRadius: '50%', background: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '28px' }}>
-        <div style={{ fontSize: '40px', lineHeight: 1 }}>✓</div>
+      <div style={{ width: '110px', height: '110px', borderRadius: '50%', background: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '28px' }}>
+        <svg width="56" height="56" viewBox="0 0 40 40" fill="none">
+          <path d="M8 20L16 28L32 12" stroke="#22C55E" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
       </div>
 
       <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#A78BFA', marginBottom: '8px', textTransform: 'uppercase', textAlign: 'center' }}>Programare confirmata</div>
