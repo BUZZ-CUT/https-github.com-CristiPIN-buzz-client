@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth } from '../firebaseClient';
 import { setConfirmationResult } from '../services/smsAuth';
+
+let recaptchaVerifier = null;
 
 function PhonePage() {
   const navigate = useNavigate();
@@ -11,41 +13,27 @@ function PhonePage() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const recaptchaRef = useRef(null);
 
   const totalSteps = mode === 'register' ? 5 : 2;
-
-  useEffect(() => {
-    // Initializeaza reCAPTCHA invizibil
-    if (!recaptchaRef.current) {
-      recaptchaRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {},
-      });
-      recaptchaRef.current.render();
-    }
-    return () => {
-      if (recaptchaRef.current) {
-        recaptchaRef.current.clear();
-        recaptchaRef.current = null;
-      }
-    };
-  }, []);
 
   const handleSend = async () => {
     if (phone.length < 9) return;
     setLoading(true);
     setError('');
     try {
+      if (!recaptchaVerifier) {
+        recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible',
+          callback: () => {},
+        });
+      }
       const fullPhone = '+40' + phone;
-      const confirmation = await signInWithPhoneNumber(auth, fullPhone, recaptchaRef.current);
+      const confirmation = await signInWithPhoneNumber(auth, fullPhone, recaptchaVerifier);
       setConfirmationResult(confirmation);
       navigate('/sms', { state: { mode, phone } });
     } catch (err) {
       console.error(err);
       setError('Nu am putut trimite SMS-ul. Verifică numărul și încearcă din nou.');
-      // Reseteaza recaptcha la eroare
-      recaptchaRef.current = null;
     } finally {
       setLoading(false);
     }
@@ -53,8 +41,6 @@ function PhonePage() {
 
   return (
     <div style={{ background: '#0A0A0F', height: '100vh', display: 'flex', flexDirection: 'column', padding: '48px 28px 40px', fontFamily: 'sans-serif' }}>
-      <div id="recaptcha-container" />
-
       <div onClick={() => navigate('/welcome')} style={{ color: 'rgba(255,255,255,0.55)', cursor: 'pointer', marginBottom: '32px', fontSize: '22px' }}>←</div>
 
       <div style={{ display: 'flex', gap: '6px', marginBottom: '24px' }}>
