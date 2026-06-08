@@ -12,6 +12,7 @@ import HomePage from './pages/HomePage';
 import BookingPage from './pages/BookingPage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
+import BookingDonePage from './pages/BookingDonePage';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/booking" element={<BookingPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/edit-profile" element={<EditProfilePage />} />
+        <Route path="/booking-done" element={<BookingDonePage />} />
       </Routes>
     </Router>
   );
