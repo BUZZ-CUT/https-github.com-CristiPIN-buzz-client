@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Start-Process \"https://supabase.com/dashboard/project/lbdqaxjcmzmasodhwacv/sql/new\")",
+      "PowerShell(Start-Process \"https://supabase.com/dashboard/project/lbdqaxjcmzmasodhwacv/editor\")",
+      "PowerShell(Start-Process \"https://console.firebase.google.com\")",
+      "PowerShell(git *)"
+    ]
+  }
+}
