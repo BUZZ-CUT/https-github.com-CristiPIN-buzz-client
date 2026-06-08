@@ -20,7 +20,9 @@ function PhonePage() {
     if (!recaptchaRef.current) {
       recaptchaRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
+        callback: () => {},
       });
+      recaptchaRef.current.render();
     }
     return () => {
       if (recaptchaRef.current) {
