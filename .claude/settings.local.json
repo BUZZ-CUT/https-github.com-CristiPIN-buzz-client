@@ -12,7 +12,8 @@
       "PowerShell(Start-Process \"https://console.cloud.google.com/apis/api/identitytoolkit.googleapis.com/overview?project=buzz-barber\")",
       "PowerShell(Start-Process \"https://console.cloud.google.com/apis/credentials?project=buzz-barber\")",
       "PowerShell(Start-Process \"https://supabase.com/dashboard/project/lbdqaxjcmzmasodhwacv/settings/api\")",
-      "PowerShell(Start-Process \"https://supabase.com/dashboard/project/lbdqaxjcmzmasodhwacv/settings/api-keys\")"
+      "PowerShell(Start-Process \"https://supabase.com/dashboard/project/lbdqaxjcmzmasodhwacv/settings/api-keys\")",
+      "PowerShell(git add *)"
     ]
   }
 }
