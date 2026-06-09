@@ -49,21 +49,11 @@ export async function createAppointment({ serviceId, date, startTime, endTime, o
 }
 
 export async function rescheduleAppointment(oldId, { date, startTime, endTime }) {
-  const { data: old } = await supabase
-    .from('appointments')
-    .select('client_id, service_id, observations')
-    .eq('id', oldId)
-    .single();
-
-  await supabase.from('appointments').update({ status: 'reprogramat', updated_at: new Date().toISOString() }).eq('id', oldId);
-
-  const { appointment } = await callFunction('create-appointment', {
-    service_id: old.service_id,
+  const { appointment } = await callFunction('reschedule', {
+    appointment_id: oldId,
     date,
     start_time: startTime,
     end_time: endTime,
-    observations: old.observations,
   });
-  await supabase.from('appointments').update({ rescheduled_from: oldId }).eq('id', appointment.id);
   return appointment;
 }

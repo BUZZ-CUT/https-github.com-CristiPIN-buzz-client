@@ -13,6 +13,7 @@ import BookingPage from './pages/BookingPage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import BookingDonePage from './pages/BookingDonePage';
+import ReschedulePage from './pages/ReschedulePage';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/edit-profile" element={<EditProfilePage />} />
         <Route path="/booking-done" element={<BookingDonePage />} />
+        <Route path="/reprogramare" element={<ReschedulePage />} />
       </Routes>
     </Router>
   );

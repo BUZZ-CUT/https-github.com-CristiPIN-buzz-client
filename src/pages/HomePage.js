@@ -72,11 +72,17 @@ function HomePage() {
             <div style={{ fontSize: '26px', fontWeight: '700', color: '#fff', letterSpacing: '1.5px', marginBottom: '4px' }}>{nextAppt.service?.name}</div>
             <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}>{nextAppt.service?.duration_min} min · {nextAppt.service?.price} lei</div>
             <div style={{ height: '1px', background: 'rgba(139,92,246,0.15)', margin: '14px 0' }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', color: '#fff' }}>CP</div>
-              <div>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: '#fff' }}>Cristi Pintea</div>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.28)', marginTop: '1px' }}>Apex Man · Vaslui</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', color: '#fff' }}>CP</div>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: '#fff' }}>Cristi Pintea</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.28)', marginTop: '1px' }}>Apex Man · Vaslui</div>
+                </div>
+              </div>
+              <div onClick={(e) => { e.stopPropagation(); navigate('/reprogramare', { state: { appointmentId: nextAppt.id, service: nextAppt.service } }); }}
+                style={{ fontSize: '12px', fontWeight: '600', color: '#A78BFA', cursor: 'pointer', padding: '6px 12px', border: '1px solid rgba(167,139,250,0.3)', borderRadius: '8px' }}>
+                Reprogramează
               </div>
             </div>
           </div>
