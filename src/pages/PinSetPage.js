@@ -8,7 +8,7 @@ function PinSetPage() {
   const location = useLocation();
   const state = location.state || {};
   const existingSession = getSession();
-  const isChangePinMode = !!existingSession;
+  const isChangePinMode = !!existingSession || state.mode === 'reset';
 
   const [pin, setPin] = useState('');
   const [step, setStep] = useState('set');
@@ -44,7 +44,12 @@ function PinSetPage() {
           try {
             if (isChangePinMode) {
               await callFunction('change-pin', { pin: newPin });
-              navigate('/profile');
+              if (state.mode === 'reset') {
+                saveSession(state.user);
+                navigate('/home');
+              } else {
+                navigate('/profile');
+              }
             } else {
               const { user } = await callFunction('register', {
                 pin: newPin,
@@ -72,7 +77,7 @@ function PinSetPage() {
 
   return (
     <div style={{ background: '#0A0A0F', height: '100vh', display: 'flex', flexDirection: 'column', padding: '48px 28px 40px', fontFamily: 'sans-serif' }}>
-      <div onClick={() => navigate(isChangePinMode ? '/profile' : '/social', { state })} style={{ color: 'rgba(255,255,255,0.55)', cursor: 'pointer', marginBottom: '32px', fontSize: '22px' }}>←</div>
+      <div onClick={() => navigate(state.mode === 'reset' ? '/login' : isChangePinMode ? '/profile' : '/social', { state })} style={{ color: 'rgba(255,255,255,0.55)', cursor: 'pointer', marginBottom: '32px', fontSize: '22px' }}>←</div>
       {!isChangePinMode && (
         <div style={{ display: 'flex', gap: '6px', marginBottom: '24px' }}>
           {[0,1,2,3,4].map(i => <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: '#8B5CF6' }} />)}

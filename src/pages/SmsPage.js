@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getConfirmationResult, setConfirmationResult } from '../services/smsAuth';
 import { signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth';
@@ -56,7 +56,12 @@ function SmsPage() {
         }
         navigate('/pin-login', { state: { phone: fullPhone, user } });
       } else if (mode === 'reset') {
-        navigate('/pin-set', { state: { phone: fullPhone } });
+        const { user } = await callFunction('get-user-info', {});
+        if (!user) {
+          setError('Număr neînregistrat. Creează un cont mai întâi.');
+          return;
+        }
+        navigate('/pin-set', { state: { mode: 'reset', user } });
       } else {
         navigate('/name', { state: { mode, phone: fullPhone } });
       }
@@ -70,6 +75,14 @@ function SmsPage() {
       setLoading(false);
     }
   };
+
+  const autoSendDone = useRef(false);
+  useEffect(() => {
+    if (mode === 'reset' && location.state?.autoSend && !autoSendDone.current) {
+      autoSendDone.current = true;
+      handleResend();
+    }
+  }, []);
 
   const handleResend = async () => {
     try {

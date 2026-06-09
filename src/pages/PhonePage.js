@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth } from '../firebaseClient';
@@ -10,19 +10,25 @@ function PhonePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const mode = location.state?.mode || 'register';
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(location.state?.prefillPhone || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const containerRef = useRef(null);
 
   const totalSteps = mode === 'register' ? 5 : 2;
+
+  useEffect(() => {
+    recaptchaVerifier = null;
+    return () => { recaptchaVerifier = null; };
+  }, []);
 
   const handleSend = async () => {
     if (phone.length < 9) return;
     setLoading(true);
     setError('');
     try {
-      if (!recaptchaVerifier) {
-        recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      if (!recaptchaVerifier && containerRef.current) {
+        recaptchaVerifier = new RecaptchaVerifier(auth, containerRef.current, {
           size: 'invisible',
           callback: () => {},
         });
@@ -41,6 +47,7 @@ function PhonePage() {
 
   return (
     <div style={{ background: '#0A0A0F', height: '100vh', display: 'flex', flexDirection: 'column', padding: '48px 28px 40px', fontFamily: 'sans-serif' }}>
+      <div ref={containerRef} />
       <div onClick={() => navigate('/welcome')} style={{ color: 'rgba(255,255,255,0.55)', cursor: 'pointer', marginBottom: '32px', fontSize: '22px' }}>←</div>
 
       <div style={{ display: 'flex', gap: '6px', marginBottom: '24px' }}>

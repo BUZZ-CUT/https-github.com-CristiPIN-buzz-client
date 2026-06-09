@@ -56,7 +56,7 @@ function WelcomePage() {
         zIndex: 1
       }}>
         <button
-          onClick={() => navigate('/register')}
+          onClick={() => navigate('/register', { state: { mode: 'register' } })}
           style={{
             width: '100%',
             padding: '16px',
@@ -73,7 +73,7 @@ function WelcomePage() {
         </button>
 
         <button
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/login', { state: { mode: 'login' } })}
           style={{
             width: '100%',
             padding: '16px',

@@ -71,7 +71,7 @@ function PinLoginPage() {
         ))}
       </div>
       <p style={{ color: '#A78BFA', fontSize: '13px', cursor: 'pointer', marginTop: '20px' }}
-        onClick={() => navigate('/sms', { state: { mode: 'reset', phone } })}>
+        onClick={() => navigate('/sms', { state: { mode: 'reset', phone: phone.replace('+40', ''), autoSend: true } })}>
         Am uitat PIN-ul
       </p>
     </div>
