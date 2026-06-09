@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getUserByPhone } from '../services/authService';
-import { saveSession, hashPin } from '../services/session';
+import { callFunction } from '../services/apiService';
+import { saveSession } from '../services/session';
 
 function PinLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const phone = location.state?.phone || '';
+  const userInfo = location.state?.user || null;
   const [pin, setPin] = useState('');
-  const [user, setUser] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const keys = ['1','2','3','4','5','6','7','8','9','del','0',''];
 
-  useEffect(() => {
-    if (phone) {
-      getUserByPhone(phone).then(u => setUser(u)).catch(() => {});
-    }
-  }, [phone]);
-
-  const initials = user ? `${(user.prenume || '')[0] || ''}${(user.name || '')[0] || ''}`.toUpperCase() : '?';
-  const displayName = user ? `${user.prenume || ''} ${(user.name || '')[0] || ''}.`.trim() : '';
+  const initials = userInfo
+    ? `${(userInfo.prenume || '')[0] || ''}${(userInfo.name || '')[0] || ''}`.toUpperCase()
+    : '?';
+  const displayName = userInfo
+    ? `${userInfo.prenume || ''} ${(userInfo.name || '')[0] || ''}.`.trim()
+    : '';
 
   const press = async (k) => {
     if (loading) return;
@@ -35,19 +33,11 @@ function PinLoginPage() {
       setError('');
       setTimeout(async () => {
         try {
-          const pin_hash = await hashPin(newPin);
-          if (!user || user.pin_hash !== pin_hash) {
-            setError('PIN incorect. Încearcă din nou.');
-            setPin('');
-          } else if (user.blocked) {
-            setError('Contul tău este blocat. Contactează frizerulsau.');
-            setPin('');
-          } else {
-            saveSession(user);
-            navigate('/home');
-          }
-        } catch {
-          setError('Eroare. Încearcă din nou.');
+          const { user } = await callFunction('verify-pin', { pin: newPin });
+          saveSession(user);
+          navigate('/home');
+        } catch (err) {
+          setError(err.message || 'PIN incorect. Încearcă din nou.');
           setPin('');
         } finally {
           setLoading(false);

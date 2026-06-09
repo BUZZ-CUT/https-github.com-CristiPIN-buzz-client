@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { registerUser } from '../services/authService';
-import { saveSession, hashPin } from '../services/session';
+import { callFunction } from '../services/apiService';
+import { getSession, saveSession } from '../services/session';
 
 function PinSetPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state || {};
+  const existingSession = getSession();
+  const isChangePinMode = !!existingSession;
+
   const [pin, setPin] = useState('');
   const [step, setStep] = useState('set');
   const [firstPin, setFirstPin] = useState('');
@@ -39,21 +42,23 @@ function PinSetPage() {
           setLoading(true);
           setError('');
           try {
-            const pin_hash = await hashPin(newPin);
-            const user = await registerUser({
-              phone: state.phone,
-              name: state.nume,
-              prenume: state.prenume,
-              instagram: state.ig || null,
-              facebook: state.fb || null,
-              tiktok: state.tt || null,
-              pin_hash,
-            });
-            saveSession(user);
-            navigate('/home');
+            if (isChangePinMode) {
+              await callFunction('change-pin', { pin: newPin });
+              navigate('/profile');
+            } else {
+              const { user } = await callFunction('register', {
+                pin: newPin,
+                name: state.nume,
+                prenume: state.prenume,
+                instagram: state.ig || null,
+                facebook: state.fb || null,
+                tiktok: state.tt || null,
+              });
+              saveSession(user);
+              navigate('/home');
+            }
           } catch (err) {
-            console.error(err);
-            setError('Eroare la înregistrare. Încearcă din nou.');
+            setError(err.message || 'Eroare. Încearcă din nou.');
             setPin('');
             setStep('set');
             setFirstPin('');
@@ -67,13 +72,15 @@ function PinSetPage() {
 
   return (
     <div style={{ background: '#0A0A0F', height: '100vh', display: 'flex', flexDirection: 'column', padding: '48px 28px 40px', fontFamily: 'sans-serif' }}>
-      <div onClick={() => navigate('/social', { state })} style={{ color: 'rgba(255,255,255,0.55)', cursor: 'pointer', marginBottom: '32px', fontSize: '22px' }}>←</div>
-      <div style={{ display: 'flex', gap: '6px', marginBottom: '24px' }}>
-        {[0,1,2,3,4].map(i => <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: '#8B5CF6' }} />)}
-      </div>
-      <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#A78BFA', marginBottom: '8px', textTransform: 'uppercase' }}>Pasul 5 din 5</div>
+      <div onClick={() => navigate(isChangePinMode ? '/profile' : '/social', { state })} style={{ color: 'rgba(255,255,255,0.55)', cursor: 'pointer', marginBottom: '32px', fontSize: '22px' }}>←</div>
+      {!isChangePinMode && (
+        <div style={{ display: 'flex', gap: '6px', marginBottom: '24px' }}>
+          {[0,1,2,3,4].map(i => <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: '#8B5CF6' }} />)}
+        </div>
+      )}
+      {!isChangePinMode && <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#A78BFA', marginBottom: '8px', textTransform: 'uppercase' }}>Pasul 5 din 5</div>}
       <h1 style={{ color: '#fff', fontSize: '34px', letterSpacing: '2px', margin: '0 0 8px', fontWeight: '700' }}>
-        {step === 'set' ? 'Seteaza\nPIN-ul' : 'Confirma\nPIN-ul'}
+        {step === 'set' ? (isChangePinMode ? 'PIN nou' : 'Seteaza\nPIN-ul') : 'Confirma\nPIN-ul'}
       </h1>
       <p style={{ color: 'rgba(255,255,255,0.28)', fontSize: '14px', lineHeight: '1.6', marginBottom: '32px' }}>
         {step === 'set' ? 'Alege un PIN de 4 cifre.' : 'Introdu din nou PIN-ul ales.'}

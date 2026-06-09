@@ -94,7 +94,6 @@ function BookingPage() {
       const endMin = sh * 60 + sm + selSrv.duration_min;
       const endTime = `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`;
       await createAppointment({
-        clientId: user.id,
         serviceId: selSrv.id,
         date: dateStr,
         startTime: selOra,

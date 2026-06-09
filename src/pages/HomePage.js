@@ -13,7 +13,7 @@ function HomePage() {
   useEffect(() => {
     if (!user) { navigate('/welcome'); return; }
     Promise.all([
-      getNextAppointment(user.id),
+      getNextAppointment(),
       getServices(),
     ]).then(([appt, srvs]) => {
       setNextAppt(appt);

@@ -1,45 +1,14 @@
 import { supabase } from '../supabaseClient';
+import { callFunction } from './apiService';
 
-// Toate serviciile active
+// Date publice — direct prin anon key (fara PII)
+
 export async function getServices() {
-  const { data, error } = await supabase
-    .from('services')
-    .select('*')
-    .eq('active', true)
-    .order('price');
+  const { data, error } = await supabase.from('services').select('*').eq('active', true).order('price');
   if (error) throw error;
   return data;
 }
 
-// Programarile unui client (cu detalii serviciu)
-export async function getMyAppointments(clientId) {
-  const { data, error } = await supabase
-    .from('appointments')
-    .select('*, service:services(name, duration_min, price)')
-    .eq('client_id', clientId)
-    .order('date', { ascending: false });
-  if (error) throw error;
-  return data;
-}
-
-// Urmatoarea programare activa
-export async function getNextAppointment(clientId) {
-  const today = new Date().toISOString().split('T')[0];
-  const { data, error } = await supabase
-    .from('appointments')
-    .select('*, service:services(name, duration_min, price)')
-    .eq('client_id', clientId)
-    .eq('status', 'confirmat')
-    .gte('date', today)
-    .order('date')
-    .order('start_time')
-    .limit(1)
-    .single();
-  if (error && error.code !== 'PGRST116') throw error;
-  return data || null;
-}
-
-// Ore ocupate pentru o data data
 export async function getBusySlots(date) {
   const { data, error } = await supabase
     .from('appointments')
@@ -50,63 +19,51 @@ export async function getBusySlots(date) {
   return data;
 }
 
-// Creeaza programare noua
-export async function createAppointment({ clientId, serviceId, date, startTime, endTime, observations }) {
-  const { data, error } = await supabase
-    .from('appointments')
-    .insert([{
-      client_id: clientId,
-      service_id: serviceId,
-      date,
-      start_time: startTime,
-      end_time: endTime,
-      observations: observations || null,
-      status: 'confirmat',
-    }])
-    .select()
-    .single();
+export async function getWorkSchedule() {
+  const { data, error } = await supabase.from('work_schedule').select('*').order('day_of_week');
   if (error) throw error;
   return data;
 }
 
-// Reprogrameaza (inlocuieste vechea programare)
-export async function rescheduleAppointment(oldId, { date, startTime, endTime }) {
-  const { error } = await supabase
-    .from('appointments')
-    .update({ status: 'reprogramat', updated_at: new Date().toISOString() })
-    .eq('id', oldId);
-  if (error) throw error;
+// Date private — prin Edge Functions cu autentificare Firebase
 
+export async function getMyAppointments() {
+  const { appointments } = await callFunction('my-appointments', {});
+  return appointments;
+}
+
+export async function getNextAppointment() {
+  const { appointment } = await callFunction('my-appointments', { type: 'next' });
+  return appointment;
+}
+
+export async function createAppointment({ serviceId, date, startTime, endTime, observations }) {
+  const { appointment } = await callFunction('create-appointment', {
+    service_id: serviceId,
+    date,
+    start_time: startTime,
+    end_time: endTime,
+    observations,
+  });
+  return appointment;
+}
+
+export async function rescheduleAppointment(oldId, { date, startTime, endTime }) {
   const { data: old } = await supabase
     .from('appointments')
     .select('client_id, service_id, observations')
     .eq('id', oldId)
     .single();
 
-  const { data, error: err2 } = await supabase
-    .from('appointments')
-    .insert([{
-      client_id: old.client_id,
-      service_id: old.service_id,
-      date,
-      start_time: startTime,
-      end_time: endTime,
-      observations: old.observations,
-      status: 'confirmat',
-      rescheduled_from: oldId,
-    }])
-    .select()
-    .single();
-  if (err2) throw err2;
-  return data;
-}
+  await supabase.from('appointments').update({ status: 'reprogramat', updated_at: new Date().toISOString() }).eq('id', oldId);
 
-// Program de lucru
-export async function getWorkSchedule() {
-  const { data, error } = await supabase
-    .from('work_schedule')
-    .select('*')
-    .order('day_of_week');
-  if (error) throw error;
-  return data;
+  const { appointment } = await callFunction('create-appointment', {
+    service_id: old.service_id,
+    date,
+    start_time: startTime,
+    end_time: endTime,
+    observations: old.observations,
+  });
+  await supabase.from('appointments').update({ rescheduled_from: oldId }).eq('id', appointment.id);
+  return appointment;
 }

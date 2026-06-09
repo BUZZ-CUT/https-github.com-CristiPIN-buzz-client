@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { getConfirmationResult, setConfirmationResult } from '../services/smsAuth';
 import { signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth';
 import { auth } from '../firebaseClient';
-import { getUserByPhone } from '../services/authService';
+import { callFunction } from '../services/apiService';
 
 function SmsPage() {
   const navigate = useNavigate();
@@ -48,18 +48,24 @@ function SmsPage() {
       const fullPhone = '+40' + phone;
 
       if (mode === 'login') {
-        const user = await getUserByPhone(fullPhone);
+        // Firebase autentificat — verificam daca exista in baza de date
+        const { user } = await callFunction('get-user-info', {});
         if (!user) {
           setError('Număr neînregistrat. Creează un cont mai întâi.');
           return;
         }
-        navigate('/pin-login', { state: { userId: user.id, phone: fullPhone } });
+        navigate('/pin-login', { state: { phone: fullPhone, user } });
+      } else if (mode === 'reset') {
+        navigate('/pin-set', { state: { phone: fullPhone } });
       } else {
         navigate('/name', { state: { mode, phone: fullPhone } });
       }
     } catch (err) {
-      console.error(err);
-      setError('Cod incorect. Încearcă din nou.');
+      if (err.message?.includes('Număr neînregistrat')) {
+        setError(err.message);
+      } else {
+        setError('Cod incorect. Încearcă din nou.');
+      }
     } finally {
       setLoading(false);
     }
@@ -72,7 +78,7 @@ function SmsPage() {
       setConfirmationResult(confirmation);
       setDigits(['', '', '', '', '', '']);
       setError('');
-    } catch (err) {
+    } catch {
       setError('Nu am putut retrimite SMS-ul.');
     }
   };

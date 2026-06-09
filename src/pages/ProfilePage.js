@@ -14,7 +14,7 @@ function ProfilePage() {
 
   useEffect(() => {
     if (!user) { navigate('/welcome'); return; }
-    getMyAppointments(user.id).then(setAppointments).catch(console.error);
+    getMyAppointments().then(setAppointments).catch(console.error);
   }, []);
 
   const initials = user ? `${(user.prenume || '')[0] || ''}${(user.name || '')[0] || ''}`.toUpperCase() : '';

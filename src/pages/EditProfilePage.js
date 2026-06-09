@@ -21,7 +21,7 @@ function EditProfilePage() {
     setSaving(true);
     setError('');
     try {
-      const updated = await updateProfile(user.id, {
+      const updated = await updateProfile({
         prenume,
         name: nume,
         instagram: ig || null,
