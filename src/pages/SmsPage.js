@@ -82,7 +82,7 @@ function SmsPage() {
       autoSendDone.current = true;
       handleResend();
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleResend = async () => {
     try {
