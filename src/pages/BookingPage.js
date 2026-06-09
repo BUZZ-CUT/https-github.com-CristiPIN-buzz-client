@@ -25,7 +25,7 @@ function BookingPage() {
     if (!user) { navigate('/welcome'); return; }
     getServices().then(setServices).catch(console.error);
     getWorkSchedule().then(setSchedule).catch(console.error);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (selDate !== null) {

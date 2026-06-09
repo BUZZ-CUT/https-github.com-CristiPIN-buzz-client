@@ -15,7 +15,7 @@ function ProfilePage() {
   useEffect(() => {
     if (!user) { navigate('/welcome'); return; }
     getMyAppointments().then(setAppointments).catch(console.error);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const initials = user ? `${(user.prenume || '')[0] || ''}${(user.name || '')[0] || ''}`.toUpperCase() : '';
   const displayName = user ? `${user.prenume || ''} ${user.name || ''}`.trim() : '';

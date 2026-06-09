@@ -19,7 +19,7 @@ function HomePage() {
       setNextAppt(appt);
       setServices(srvs);
     }).catch(console.error).finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const initials = user ? `${(user.prenume || '')[0] || ''}${(user.name || '')[0] || ''}`.toUpperCase() : '';
   const displayName = user ? `${user.prenume || ''} ${(user.name || '')[0] || ''}.`.trim() : '';

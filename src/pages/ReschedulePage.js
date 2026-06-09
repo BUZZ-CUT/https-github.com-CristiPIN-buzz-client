@@ -24,7 +24,7 @@ function ReschedulePage() {
   useEffect(() => {
     if (!user || !appointmentId) { navigate('/home'); return; }
     getWorkSchedule().then(setSchedule).catch(console.error);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (selDate !== null) {
