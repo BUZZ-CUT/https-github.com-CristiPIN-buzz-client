@@ -39,7 +39,7 @@ function PhonePage() {
       navigate('/sms', { state: { mode, phone } });
     } catch (err) {
       console.error(err);
-      setError('Nu am putut trimite SMS-ul. Verifică numărul și încearcă din nou.');
+      setError(err.code ? `Eroare: ${err.code}` : 'Nu am putut trimite SMS-ul. Verifică numărul și încearcă din nou.');
     } finally {
       setLoading(false);
     }
