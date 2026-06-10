@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { callFunction } from '../services/apiService';
 import { saveSession } from '../services/session';
+import { saveFcmToken } from '../services/fcmService';
 
 function PinLoginPage() {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ function PinLoginPage() {
         try {
           const { user } = await callFunction('verify-pin', { pin: newPin });
           saveSession(user);
+          saveFcmToken();
           navigate('/home');
         } catch (err) {
           setError(err.message || 'PIN incorect. Încearcă din nou.');

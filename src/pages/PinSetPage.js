@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { callFunction } from '../services/apiService';
 import { getSession, saveSession } from '../services/session';
+import { saveFcmToken } from '../services/fcmService';
 
 function PinSetPage() {
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ function PinSetPage() {
                 tiktok: state.tt || null,
               });
               saveSession(user);
+              saveFcmToken();
               navigate('/home');
             }
           } catch (err) {
