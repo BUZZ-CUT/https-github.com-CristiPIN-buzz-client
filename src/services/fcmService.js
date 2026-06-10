@@ -14,6 +14,10 @@ export async function saveFcmToken() {
     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     console.log('[FCM] sw registered:', registration.scope);
 
+    // sterge subscriptia veche daca exista (VAPID key diferit)
+    const oldSub = await registration.pushManager.getSubscription();
+    if (oldSub) await oldSub.unsubscribe();
+
     const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
     console.log('[FCM] token:', token ? token.slice(0, 20) + '...' : 'null');
     if (!token) return;
