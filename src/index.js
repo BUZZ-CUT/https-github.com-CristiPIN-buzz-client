@@ -13,6 +13,12 @@ window.addEventListener('error', (e) => {
   }
 });
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(() => {});
+  });
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
 
