@@ -14,9 +14,27 @@ export async function getBusySlots(date) {
     .from('appointments')
     .select('start_time, end_time')
     .eq('date', date)
-    .in('status', ['confirmat', 'prezent']);
+    .not('status', 'in', '(anulat,reprogramat)');
   if (error) throw error;
   return data;
+}
+
+export async function isOnWaitlist(clientId, date) {
+  const { data, error } = await supabase
+    .from('waitlist')
+    .select('id')
+    .eq('client_id', clientId)
+    .eq('date', date)
+    .maybeSingle();
+  if (error) throw error;
+  return !!data;
+}
+
+export async function joinWaitlist(clientId, serviceId, date) {
+  const { error } = await supabase
+    .from('waitlist')
+    .insert({ client_id: clientId, service_id: serviceId, date });
+  if (error) throw error;
 }
 
 export async function getWorkSchedule() {

@@ -4,7 +4,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Buzz** — barbershop appointment app for Apex Man Barber Shop (Vaslui, Romania), built by/for Cristi Pintea. This is the **client-facing** app (`buzz-client`). A separate admin app (`buzz-admin`) is planned but not yet built.
+**BUZZ Barber** — platformă de programări pentru frizeri din România, fondată de Cristi Pintea. Viziunea completă e în `BUZZ_Barber_Viziune.md`.
+
+**Filozofia centrală:** Frizerul este proprietarul identității sale digitale. Profilul, clienții și recenziile îi aparțin lui — nu salonului. Dacă schimbă salonul, clienții îl urmăresc automat.
+
+**Stadiu curent:** MVP fazei 1 — aplicație client pentru **Apex Man Barber Shop** (Vaslui), ca produs de validare înainte de lansarea platformei multi-frizer.
+
+**Arhitectura platformei (3 niveluri):**
+- **Nivel 1** — Frizer independent (cont propriu, link personal `buzzbarber.ro/cristi`)
+- **Nivel 2** — Echipă mică (2-5 frizeri asociați voluntar, calendar comun)
+- **Nivel 3** — Salon (frizerul alege să fie listat; salonul NU poate șterge profilul lui)
+
+**Diferențiator cheie — BUZZ Points:**
+- La fiecare programare finalizată, clientul primește puncte (setate de frizer per serviciu)
+- Punctele se folosesc la: Roata Norocului, tombole lunare, card de fidelitate digital, reduceri directe
+
+**Model de monetizare (propunere):**
+- Gratuit: 1 frizer, max 30 programări/lună
+- Pro ~49 lei/lună: programări nelimitate + BUZZ Points + statistici
+- Salon ~99 lei/lună: până la 5 frizeri
+- Salon+ ~199 lei/lună: frizeri nelimitați + branding
 
 Package name (Android): `com.apexman.buzz`
 
@@ -121,13 +140,27 @@ Lățime maximă **430px** centrată. Bottom nav e `position: fixed` → conțin
 - ProfilePage cu istoric real + deconectare
 - EditProfilePage cu salvare reală
 
-### ❌ De făcut (în ordine)
-1. **Firebase FCM** — notificări push 24h și 1h înainte de programare
+### ⏳ În așteptare
+- **Firebase Blaze** — billing account BUZZ BARBER (01085A-F64D54-53911E) confirmat activ de Google Support (10 iunie 2026). Trecerea Spark → Blaze se propagă în 24-48h automat. Nu mai e nevoie de nicio acțiune. Când apare Blaze în Firebase Console, începem FCM.
+
+### ❌ De făcut — Faza 1 MVP (Apex Man)
+1. **Firebase FCM** — notificări push 24h și 1h înainte de programare (necesită Blaze — în propagare)
 2. **Reprogramare** — pagina `/reprogramare` + logica în Supabase
 3. **Recuperare PIN** — flow "Am uitat PIN-ul" (SMS → PIN nou)
 4. **Build APK Android** — Capacitor setup
 5. **Vercel deploy** — publicare web/PWA
 6. **buzz-admin** — aplicația separată pentru Cristi (calendar, clienți, setări)
+
+### ❌ De făcut — Faza 2 Platformă
+- Arhitectură multi-frizer (cont per frizer, izolat)
+- BUZZ Points — acumulare, portofel digital
+- Roata Norocului
+- Card de fidelitate digital
+- Profil public frizer (`buzzbarber.ro/[slug]`)
+- Profil public salon cu echipă
+- Statistici avansate (clienți noi, recurenți, venit estimat)
+- Sistem de recenzii per frizer
+- Notificări SMS automate
 
 ## DB Schema (Supabase)
 
@@ -139,6 +172,10 @@ appointments  (id, client_id, service_id, date, start_time, end_time, status, ob
 work_schedule (id, day_of_week, is_open, start_time, end_time)  -- 0=luni, 6=duminică
 notifications (id, user_id, appointment_id, type, sent_at, scheduled_for)
 ```
+
+## Decizii de produs luate
+
+- **Abonamente frizer → salon (10 iunie 2026):** Când un frizer cu plan Pro se alătură unui salon, abonamentul lui se suspendă automat — salonul îl acoperă prin planul său (per seat). La plecare din salon, abonamentul Pro se reactivează automat cu creditele rămase. Detalii complete în `BUZZ_Barber_Viziune.md` secțiunea 11.
 
 ## Business Rules
 

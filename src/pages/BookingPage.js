@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSession } from '../services/session';
-import { getServices, getBusySlots, createAppointment, getWorkSchedule } from '../services/bookingService';
+import { getServices, getBusySlots, createAppointment, getWorkSchedule, isOnWaitlist, joinWaitlist } from '../services/bookingService';
 
 function BookingPage() {
   const navigate = useNavigate();
@@ -18,6 +18,8 @@ function BookingPage() {
   const [busySlots, setBusySlots] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [alreadyOnWaitlist, setAlreadyOnWaitlist] = useState(false);
+  const [joiningWaitlist, setJoiningWaitlist] = useState(false);
 
   const luni = ['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'];
 
@@ -31,8 +33,11 @@ function BookingPage() {
     if (selDate !== null) {
       const dateStr = `${calY}-${String(calM + 1).padStart(2, '0')}-${String(selDate).padStart(2, '0')}`;
       getBusySlots(dateStr).then(setBusySlots).catch(console.error);
+      if (user) {
+        isOnWaitlist(user.id, dateStr).then(setAlreadyOnWaitlist).catch(console.error);
+      }
     }
-  }, [selDate, calM, calY]);
+  }, [selDate, calM, calY]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Genereaza orele disponibile pe baza programului de lucru
   const generateSlots = () => {
@@ -103,7 +108,7 @@ function BookingPage() {
       navigate('/booking-done', { state: { selSrv: { name: selSrv.name, dur: `${selSrv.duration_min} min`, price: `${selSrv.price} lei` }, selDate, luni: luni[calM], calY, selOra } });
     } catch (err) {
       console.error(err);
-      alert('Eroare la salvarea programării. Încearcă din nou.');
+      alert(err.message || 'Eroare la salvarea programării. Încearcă din nou.');
     } finally {
       setSaving(false);
     }
@@ -184,6 +189,53 @@ function BookingPage() {
 
   if (step === 3) {
     const slots = generateSlots();
+    const allBusy = slots.length > 0 && slots.every(o => isSlotBusy(o));
+    const dateStr = selDate ? `${calY}-${String(calM + 1).padStart(2, '0')}-${String(selDate).padStart(2, '0')}` : '';
+
+    const handleJoinWaitlist = async () => {
+      if (!user || !selSrv || !dateStr) return;
+      setJoiningWaitlist(true);
+      try {
+        await joinWaitlist(user.id, selSrv.id, dateStr);
+        navigate('/waitlist-done', { state: { date: dateStr, luni: luni[calM], selDate, calY } });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setJoiningWaitlist(false);
+      }
+    };
+
+    if (allBusy) return (
+      <div style={s}>
+        <div onClick={() => setStep(2)} style={{ color: 'rgba(255,255,255,0.55)', cursor: 'pointer', marginBottom: '32px', fontSize: '22px' }}>←</div>
+        {prog(3)}
+        <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#A78BFA', marginBottom: '8px', textTransform: 'uppercase' }}>Pasul 3 din 4</div>
+        <h1 style={{ color: '#fff', fontSize: '28px', letterSpacing: '2px', margin: '0 0 8px', fontWeight: '700' }}>Alege ora</h1>
+        <p style={{ color: 'rgba(255,255,255,0.28)', fontSize: '13px', marginBottom: '32px' }}>{selDate} {luni[calM]} {calY}</p>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: '12px' }}>
+          <div style={{ fontSize: '44px', marginBottom: '4px' }}>🕐</div>
+          <div style={{ fontSize: '22px', fontWeight: '800', color: '#fff', letterSpacing: '1px' }}>Toate orele sunt ocupate</div>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '14px', lineHeight: '1.6', margin: '0 0 8px' }}>
+            Înscrie-te pe lista de așteptare și te anunțăm dacă se eliberează un loc în această zi.
+          </p>
+          {alreadyOnWaitlist ? (
+            <div style={{ padding: '14px 20px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '14px', color: '#F59E0B', fontSize: '14px', fontWeight: '600' }}>
+              Ești deja pe lista de așteptare pentru această zi
+            </div>
+          ) : (
+            <button onClick={handleJoinWaitlist} disabled={joiningWaitlist}
+              style={{ width: '100%', padding: '16px', background: joiningWaitlist ? 'rgba(139,92,246,0.3)' : '#8B5CF6', border: 'none', borderRadius: '14px', fontSize: '18px', letterSpacing: '3px', color: '#fff', cursor: joiningWaitlist ? 'not-allowed' : 'pointer', fontWeight: '700' }}>
+              {joiningWaitlist ? 'SE ÎNSCRIE...' : 'ÎNSCRIE-MĂ PE LISTĂ'}
+            </button>
+          )}
+          <button onClick={() => { setSelDate(null); setStep(2); }}
+            style={{ width: '100%', padding: '16px', background: 'transparent', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '14px', fontSize: '18px', letterSpacing: '3px', color: '#8B5CF6', cursor: 'pointer', fontWeight: '700' }}>
+            ALEGE ALTĂ ZI
+          </button>
+        </div>
+      </div>
+    );
+
     return (
       <div style={s}>
         <div onClick={() => setStep(2)} style={{ color: 'rgba(255,255,255,0.55)', cursor: 'pointer', marginBottom: '32px', fontSize: '22px' }}>←</div>

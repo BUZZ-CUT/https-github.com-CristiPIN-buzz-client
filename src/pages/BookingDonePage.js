@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 function BookingDonePage() {
   const navigate = useNavigate();
-  const { selSrv, selDate, luni, calY, selOra } = useLocation().state || {};
+  const { selSrv, selDate, luni, calY, selOra, isReschedule } = useLocation().state || {};
 
   return (
     <div style={{ background: '#0A0A0F', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px 40px', fontFamily: 'sans-serif' }}>
@@ -15,10 +15,10 @@ function BookingDonePage() {
         </svg>
       </div>
 
-      <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#A78BFA', marginBottom: '8px', textTransform: 'uppercase', textAlign: 'center' }}>Programare confirmata</div>
-      <h1 style={{ color: '#fff', fontSize: '32px', letterSpacing: '2px', fontWeight: '700', margin: '0 0 8px', textAlign: 'center' }}>Te asteptam!</h1>
+      <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#A78BFA', marginBottom: '8px', textTransform: 'uppercase', textAlign: 'center' }}>{isReschedule ? 'Reprogramare confirmata' : 'Programare confirmata'}</div>
+      <h1 style={{ color: '#fff', fontSize: '32px', letterSpacing: '2px', fontWeight: '700', margin: '0 0 8px', textAlign: 'center' }}>{isReschedule ? 'Programare actualizata!' : 'Te asteptam!'}</h1>
       <p style={{ color: 'rgba(255,255,255,0.28)', fontSize: '14px', textAlign: 'center', marginBottom: '36px', lineHeight: '1.6' }}>
-        Vei primi o notificare cu 24h și 1h înainte de programare.
+        {isReschedule ? 'Programarea ta a fost mutată cu succes la noua dată.' : 'Vei primi o notificare cu 24h și 1h înainte de programare.'}
       </p>
 
       {/* Card detalii */}

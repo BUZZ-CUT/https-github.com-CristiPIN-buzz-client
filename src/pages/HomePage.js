@@ -16,7 +16,12 @@ function HomePage() {
       getNextAppointment(),
       getServices(),
     ]).then(([appt, srvs]) => {
-      setNextAppt(appt);
+      if (appt) {
+        const apptEnd = new Date(`${appt.date}T${appt.end_time}`);
+        setNextAppt(apptEnd > new Date() ? appt : null);
+      } else {
+        setNextAppt(null);
+      }
       setServices(srvs);
     }).catch(console.error).finally(() => setLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

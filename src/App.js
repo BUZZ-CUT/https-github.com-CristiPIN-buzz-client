@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import BookingDonePage from './pages/BookingDonePage';
 import ReschedulePage from './pages/ReschedulePage';
+import WaitlistDonePage from './pages/WaitlistDonePage';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/edit-profile" element={<EditProfilePage />} />
         <Route path="/booking-done" element={<BookingDonePage />} />
         <Route path="/reprogramare" element={<ReschedulePage />} />
+        <Route path="/waitlist-done" element={<WaitlistDonePage />} />
       </Routes>
     </Router>
   );

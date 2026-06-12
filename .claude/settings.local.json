@@ -14,7 +14,30 @@
       "PowerShell(Start-Process \"https://supabase.com/dashboard/project/lbdqaxjcmzmasodhwacv/settings/api\")",
       "PowerShell(Start-Process \"https://supabase.com/dashboard/project/lbdqaxjcmzmasodhwacv/settings/api-keys\")",
       "PowerShell(git add *)",
-      "PowerShell(git commit *)"
+      "PowerShell(git commit *)",
+      "Bash(npm run *)",
+      "Bash(supabase --version)",
+      "Bash(npm --version)",
+      "Bash(scoop --version)",
+      "Bash(winget --version)",
+      "Bash(npm install *)",
+      "Bash(supabase functions *)",
+      "Bash(SUPABASE_ACCESS_TOKEN=sbp_cec190a3d80e73eef81a496a223cbb3a84c55d62 supabase functions deploy register verify-pin change-pin get-user-info my-appointments create-appointment update-profile --project-ref lbdqaxjcmzmasodhwacv --use-api)",
+      "Bash(SUPABASE_ACCESS_TOKEN=sbp_cec190a3d80e73eef81a496a223cbb3a84c55d62 supabase secrets set FIREBASE_WEB_API_KEY=AIzaSyB0F0uhekStCkdjrYmO-vMUA0u9-GwLZ4c --project-ref lbdqaxjcmzmasodhwacv)",
+      "Bash(npm start *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(SUPABASE_ACCESS_TOKEN=sbp_cec190a3d80e73eef81a496a223cbb3a84c55d62 supabase functions deploy register verify-pin change-pin get-user-info my-appointments create-appointment update-profile --project-ref lbdqaxjcmzmasodhwacv --use-api --no-verify-jwt)",
+      "WebFetch(domain:buzz-barber-a7w98x6nr-buzz-barber.vercel.app)",
+      "WebFetch(domain:https-github-com-cristi-pin-buzz-cl-kohl.vercel.app)",
+      "Bash(npx supabase *)",
+      "Bash(export SUPABASE_ACCESS_TOKEN=\"sbp_6a68932e2365be3e2ab305dfc9f5095947ae4cfa\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Bash(curl -s \"https://lbdqaxjcmzmasodhwacv.supabase.co/rest/v1/users?select=phone,fcm_token&fcm_token=not.is.null\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHFheGpjbXptYXNvZGh3YWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MDE5MjAsImV4cCI6MjA5NjQ3NzkyMH0.8TGEHXu6xVxCjNiZnYPwRGGWrTc9ms8Ruf7dKOdcAQE\")",
+      "Bash(findstr /i \"supabase\")",
+      "Bash(npx react-scripts *)"
     ]
   }
 }

@@ -18,18 +18,22 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: 'Utilizator negăsit' }, 404);
 
     if (type === 'next') {
-      const today = new Date().toISOString().split('T')[0];
+      // Bucharest = UTC+3 summer / UTC+2 winter; simplified as +3
+      const now = new Date();
+      const bucNow = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+      const todayStr = bucNow.toISOString().split('T')[0];
+      const nowTimeStr = bucNow.toISOString().split('T')[1].slice(0, 8);
       const { data, error } = await db
         .from('appointments')
         .select('*, service:services(name, duration_min, price)')
         .eq('client_id', user.id)
         .eq('status', 'confirmat')
-        .gte('date', today)
+        .or(`date.gt.${todayStr},and(date.eq.${todayStr},end_time.gt.${nowTimeStr})`)
         .order('date')
         .order('start_time')
         .limit(1)
-        .single();
-      if (error && error.code !== 'PGRST116') throw error;
+        .maybeSingle();
+      if (error) throw error;
       return json({ appointment: data || null });
     }
 
